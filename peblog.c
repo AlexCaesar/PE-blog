@@ -39,7 +39,8 @@ static int le_peblog;
  * Every user visible function must have an entry in peblog_functions[].
  */
 const zend_function_entry peblog_functions[] = {
-	PHP_FE(confirm_peblog_compiled,	NULL)		/* For testing, remove later. */
+	PHP_FE(peblog_get_script_filename,	NULL)		/* For testing, remove later. */
+	PHP_FE(peblog_start,	NULL)		/* For testing, remove later. */
 	{NULL, NULL, NULL}	/* Must be the last line in peblog_functions[] */
 };
 /* }}} */
@@ -144,25 +145,29 @@ PHP_MINFO_FUNCTION(peblog)
 /* }}} */
 
 
-/* Remove the following function when you have succesfully modified config.m4
-   so that your module can be compiled into PHP, it exists only for testing
-   purposes. */
-
-/* Every user-visible function in PHP should document itself in the source */
-/* {{{ proto string confirm_peblog_compiled(string arg)
-   Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(confirm_peblog_compiled)
+PHP_FUNCTION(peblog_get_script_filename)
 {
-	char *arg = NULL;
-	int arg_len, len;
-	char *strg;
+	zval **SERVER = NULL;
+	zval **ret = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
-		return;
+	(void)zend_hash_find(&EG(symbol_table), ZEND_STRS("_SERVER"), (void **)&SERVER);
+	//return_value = HASH_OF(*SERVER);
+	//RETVAL_LONG(Z_TYPE_PP(SERVER));
+
+	//if (zend_hash_find(Z_ARRVAL_PP(carrier), name, len + 1, (void **)&ret) == FAILURE ){
+	if (zend_hash_find(Z_ARRVAL_PP(SERVER), ZEND_STRS("REQUEST_URI"), (void **)&ret) == FAILURE ){
+		RETVAL_LONG(100);
+	}   
+	else
+	{
+		RETVAL_STRING(Z_STRVAL_P(*ret), 1);
 	}
 
-	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "peblog", arg);
-	RETURN_STRINGL(strg, len, 0);
+}
+
+PHP_FUNCTION(peblog_start)
+{
+	ZVAL_LONG(return_value, 9);
 }
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 

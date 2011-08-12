@@ -1,0 +1,8 @@
+peblog.lo: /server/php-5.3.6/ext/peblog/peblog.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/server/php-5.3.6/ext/peblog $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /server/php-5.3.6/ext/peblog/peblog.c -o peblog.lo 
+$(phplibdir)/peblog.la: ./peblog.la
+	$(LIBTOOL) --mode=install cp ./peblog.la $(phplibdir)
+
+./peblog.la: $(shared_objects_peblog) $(PEBLOG_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_peblog) $(PEBLOG_SHARED_LIBADD)
+

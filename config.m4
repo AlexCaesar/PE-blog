@@ -13,9 +13,9 @@ dnl [  --with-peblog             Include peblog support])
 
 dnl Otherwise use enable:
 
-dnl PHP_ARG_ENABLE(peblog, whether to enable peblog support,
+PHP_ARG_ENABLE(peblog, whether to enable peblog support, 
 dnl Make sure that the comment is aligned:
-dnl [  --enable-peblog           Enable peblog support])
+[  --enable-peblog           Enable peblog support])
 
 if test "$PHP_PEBLOG" != "no"; then
   dnl Write more examples of tests here...
