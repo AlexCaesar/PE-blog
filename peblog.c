@@ -26,6 +26,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_peblog.h"
+#include "url.c"
 
 /* If you declare any globals in php_peblog.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(peblog)
@@ -147,6 +148,7 @@ PHP_MINFO_FUNCTION(peblog)
 
 PHP_FUNCTION(peblog_get_script_filename)
 {
+
 	zval **SERVER = NULL;
 	zval **ret = NULL;
 
@@ -155,12 +157,19 @@ PHP_FUNCTION(peblog_get_script_filename)
 	//RETVAL_LONG(Z_TYPE_PP(SERVER));
 
 	//if (zend_hash_find(Z_ARRVAL_PP(carrier), name, len + 1, (void **)&ret) == FAILURE ){
-	if (zend_hash_find(Z_ARRVAL_PP(SERVER), ZEND_STRS("REQUEST_URI"), (void **)&ret) == FAILURE ){
+	if (zend_hash_find(Z_ARRVAL_PP(SERVER), ZEND_STRS("SCRIPT_FILENAME"), (void **)&ret) == FAILURE ){
 		RETVAL_LONG(100);
 	}   
 	else
 	{
-		RETVAL_STRING(Z_STRVAL_P(*ret), 1);
+		//char *
+		char *str = estrdup(Z_STRVAL_P(*ret));
+
+		//char blog_path[100] = "/";
+
+		char * blog_path = get_blog_path(str);
+
+		RETVAL_STRING(blog_path, 1);
 	}
 
 }
@@ -169,6 +178,7 @@ PHP_FUNCTION(peblog_start)
 {
 	ZVAL_LONG(return_value, 9);
 }
+
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 
    unfold functions in source code. See the corresponding marks just before 
