@@ -26,7 +26,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_peblog.h"
-#include "url.c"
+#include "path.c"
 
 /* If you declare any globals in php_peblog.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(peblog)
@@ -164,12 +164,39 @@ PHP_FUNCTION(peblog_get_script_filename)
 	{
 		//char *
 		char *str = estrdup(Z_STRVAL_P(*ret));
+		char *base_path = get_base_path(str);
 
-		//char blog_path[100] = "/";
+		char *list_file,  *list_content ;
+		char *path_list = "/list"; 
+		char *path_head = "/html/head.html";
 
-		char * blog_path = get_blog_path(str);
+		int path_len = sizeof(path_list) + sizeof(base_path) +1;
 
-		RETVAL_STRING(blog_path, 1);
+		list_file = (char *) emalloc(path_len);
+		memset(list_file , 0, path_len);
+		
+		sprintf(list_file, "%s%s", base_path, path_head);
+			
+		//sprintf(filename, "%s/blog/list", base_path);
+
+		FILE *fp;
+		int i = 0;
+		fp = fopen(list_file, "r");
+		if(fp == NULL){
+			zend_printf("%s is not exists.", list_file);
+			RETVAL_STRING("File not exists", 1);
+		}
+		fseek(fp, 0, SEEK_END);
+
+		i = ftell(fp);
+
+		list_content = (char *) malloc( i + 1);
+		memset(list_content, 0, i + 1);
+
+		fseek(fp, 0, SEEK_SET);
+		fread(list_content , 1, i, fp);
+		fclose(fp);
+		RETVAL_STRING(list_content, 1);
 	}
 
 }
