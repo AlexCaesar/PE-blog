@@ -1,5 +1,5 @@
-peblog.lo: /server/php-5.3.6/ext/peblog/peblog.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/server/php-5.3.6/ext/peblog $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /server/php-5.3.6/ext/peblog/peblog.c -o peblog.lo 
+peblog.lo: /server/source/peblog/peblog.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/server/source/peblog $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /server/source/peblog/peblog.c -o peblog.lo 
 $(phplibdir)/peblog.la: ./peblog.la
 	$(LIBTOOL) --mode=install cp ./peblog.la $(phplibdir)
 

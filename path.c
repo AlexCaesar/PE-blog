@@ -1,5 +1,5 @@
-char * get_base_path( char* str){
-	char *token;
+char * get_base_path( char* str ){
+	char *token ;
 	char blog_path[100] = "/";
 
 	token = strtok(str, "/");

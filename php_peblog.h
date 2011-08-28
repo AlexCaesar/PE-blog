@@ -42,8 +42,7 @@ PHP_RINIT_FUNCTION(peblog);
 PHP_RSHUTDOWN_FUNCTION(peblog);
 PHP_MINFO_FUNCTION(peblog);
 
-PHP_FUNCTION(peblog_start);	
-PHP_FUNCTION(peblog_get_script_filename);
+PHP_FUNCTION(peblog_get_html);
 
 /* 
   	Declare any global variables you may need between the BEGIN

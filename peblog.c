@@ -27,6 +27,7 @@
 #include "ext/standard/info.h"
 #include "php_peblog.h"
 #include "path.c"
+#include "file.c"
 
 /* If you declare any globals in php_peblog.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(peblog)
@@ -40,8 +41,7 @@ static int le_peblog;
  * Every user visible function must have an entry in peblog_functions[].
  */
 const zend_function_entry peblog_functions[] = {
-	PHP_FE(peblog_get_script_filename,	NULL)		/* For testing, remove later. */
-	PHP_FE(peblog_start,	NULL)		/* For testing, remove later. */
+	PHP_FE(peblog_get_html,	NULL)		/* For testing, remove later. */
 	{NULL, NULL, NULL}	/* Must be the last line in peblog_functions[] */
 };
 /* }}} */
@@ -146,65 +146,81 @@ PHP_MINFO_FUNCTION(peblog)
 /* }}} */
 
 
-PHP_FUNCTION(peblog_get_script_filename)
+PHP_FUNCTION(peblog_get_html)
 {
 
-	zval **SERVER = NULL;
-	zval **ret = NULL;
+	zval **SERVER	= NULL;
+	zval **ret		= NULL;
+
+	zend_bool jit_init = (PG(auto_globals_jit) && !PG(register_globals) && 
+			                !PG(register_long_arrays));
+	if (jit_init) { 
+		    zend_is_auto_global(ZEND_STRL("_SERVER") TSRMLS_CC);
+	}   
 
 	(void)zend_hash_find(&EG(symbol_table), ZEND_STRS("_SERVER"), (void **)&SERVER);
-	//return_value = HASH_OF(*SERVER);
-	//RETVAL_LONG(Z_TYPE_PP(SERVER));
-
-	//if (zend_hash_find(Z_ARRVAL_PP(carrier), name, len + 1, (void **)&ret) == FAILURE ){
-	if (zend_hash_find(Z_ARRVAL_PP(SERVER), ZEND_STRS("SCRIPT_FILENAME"), (void **)&ret) == FAILURE ){
-		RETVAL_LONG(100);
+	if (zend_hash_find(Z_ARRVAL_PP(SERVER), ZEND_STRS("SCRIPT_FILENAME"), (void **)&ret) == FAILURE )
+	{
+		RETVAL_STRING("No SCRIPT_FILENAME. ", 1);
 	}   
 	else
 	{
-		//char *
-		char *str = estrdup(Z_STRVAL_P(*ret));
-		char *base_path = get_base_path(str);
+		char *str = NULL;
+		str		= estrdup(Z_STRVAL_P(*ret));
 
-		char *list_file,  *list_content ;
-		char *path_list = "/list"; 
-		char *path_head = "/html/head.html";
-
-		int path_len = sizeof(path_list) + sizeof(base_path) +1;
-
-		list_file = (char *) emalloc(path_len);
-		memset(list_file , 0, path_len);
+		char *path_list		= "list"; 
+		char *path_head		= "html/head.html";
+		char *path_footer	= "html/footer.html";
 		
-		sprintf(list_file, "%s%s", base_path, path_head);
-			
-		//sprintf(filename, "%s/blog/list", base_path);
+		char *base_path	= get_base_path(str);
 
-		FILE *fp;
-		int i = 0;
-		fp = fopen(list_file, "r");
-		if(fp == NULL){
-			zend_printf("%s is not exists.", list_file);
-			RETVAL_STRING("File not exists", 1);
-		}
-		fseek(fp, 0, SEEK_END);
 
-		i = ftell(fp);
+		int	path_list_len	= strlen(path_list) + strlen(base_path) +1;
+		int	path_head_len	= strlen(path_head) + strlen(base_path) +1;
+		int	path_footer_len	= strlen(path_footer) + strlen(base_path) +1;
 
-		list_content = (char *) malloc( i + 1);
-		memset(list_content, 0, i + 1);
+		char *file,  *html_head , *html_list, *html_footer;
 
-		fseek(fp, 0, SEEK_SET);
-		fread(list_content , 1, i, fp);
-		fclose(fp);
-		RETVAL_STRING(list_content, 1);
+
+		//Head ...
+		file = (char *) emalloc(path_head_len);
+		memset(file , 0, path_head_len);
+		sprintf(file, "%s%s", base_path, path_head);
+
+		html_head = peblog_file_contents(file);
+
+		//list ...
+		erealloc(file,path_list_len);
+		memset(file , 0, path_list_len);
+		sprintf(file, "%s%s", base_path, path_list);
+		html_list = peblog_file_contents(file);
+
+		//Footer ...
+		erealloc(file,path_footer_len);
+		memset(file , 0, path_footer_len);
+		sprintf(file, "%s%s", base_path, path_footer);
+		html_footer = peblog_file_contents(file);
+
+
+		int html_len = strlen(html_head) + strlen(html_list) 
+						 + strlen(html_footer) + 1;
+
+		char *html = (char *) emalloc(html_len);
+		memset(html , 0, html_len);
+		strcat(html, html_head);
+		strcat(html, html_list);
+		strcat(html, html_footer);
+
+		efree(html_head);
+		efree(html_list);
+		efree(html_footer);
+
+		RETVAL_STRING(html, 1);
 	}
-
 }
 
-PHP_FUNCTION(peblog_start)
-{
-	ZVAL_LONG(return_value, 9);
-}
+
+
 
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 

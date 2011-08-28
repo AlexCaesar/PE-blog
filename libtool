@@ -85,7 +85,7 @@ AR_FLAGS="cru"
 LTCC="cc"
 
 # LTCC compiler flags.
-LTCFLAGS="-g  -O0"
+LTCFLAGS="-g -O2"
 
 # A language-specific compiler.
 CC="cc"

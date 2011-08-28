@@ -1,11 +1,11 @@
-srcdir = /server/php-5.3.6/ext/peblog
-builddir = /server/php-5.3.6/ext/peblog
-top_srcdir = /server/php-5.3.6/ext/peblog
-top_builddir = /server/php-5.3.6/ext/peblog
+srcdir = /server/source/peblog
+builddir = /server/source/peblog
+top_srcdir = /server/source/peblog
+top_builddir = /server/source/peblog
 EGREP = /usr/bin/grep -E
 SED = /usr/bin/sed
-CONFIGURE_COMMAND = './configure' '--with-php-config=/server/php/bin/php-config'
-CONFIGURE_OPTIONS = '--with-php-config=/server/php/bin/php-config'
+CONFIGURE_COMMAND = './configure'
+CONFIGURE_OPTIONS =
 SHLIB_SUFFIX_NAME = dylib
 SHLIB_DL_SUFFIX_NAME = so
 ZEND_EXT_TYPE = zend_extension
@@ -17,25 +17,25 @@ PHP_MODULES = $(phplibdir)/peblog.la
 PHP_ZEND_EX =
 all_targets = $(PHP_MODULES) $(PHP_ZEND_EX)
 install_targets = install-modules install-headers
-prefix = /server/php
+prefix = /usr
 exec_prefix = $(prefix)
 libdir = ${exec_prefix}/lib
-prefix = /server/php
-phplibdir = /server/php-5.3.6/ext/peblog/modules
-phpincludedir = /server/php/include/php
+prefix = /usr
+phplibdir = /server/source/peblog/modules
+phpincludedir = /usr/include/php
 CC = cc
-CFLAGS = -g -O0
+CFLAGS = -g -O2
 CFLAGS_CLEAN = $(CFLAGS)
 CPP = cc -E
 CPPFLAGS = -DHAVE_CONFIG_H
 CXX =
-CXXFLAGS = -g -O0
+CXXFLAGS =
 CXXFLAGS_CLEAN = $(CXXFLAGS)
-EXTENSION_DIR = /server/php/lib/php/extensions/debug-non-zts-20090626
-PHP_EXECUTABLE = /server/php/bin/php
+EXTENSION_DIR = /usr/lib/php/extensions/no-debug-non-zts-20090626
+PHP_EXECUTABLE = /usr/bin/php
 EXTRA_LDFLAGS =
 EXTRA_LIBS =
-INCLUDES = -I/server/php/include/php -I/server/php/include/php/main -I/server/php/include/php/TSRM -I/server/php/include/php/Zend -I/server/php/include/php/ext -I/server/php/include/php/ext/date/lib
+INCLUDES = -I/usr/include/php -I/usr/include/php/main -I/usr/include/php/TSRM -I/usr/include/php/Zend -I/usr/include/php/ext -I/usr/include/php/ext/date/lib
 LFLAGS =
 LDFLAGS =
 SHARED_LIBTOOL =
@@ -161,8 +161,8 @@ distclean: clean
 
 .PHONY: all clean install distclean test
 .NOEXPORT:
-peblog.lo: /server/php-5.3.6/ext/peblog/peblog.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/server/php-5.3.6/ext/peblog $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /server/php-5.3.6/ext/peblog/peblog.c -o peblog.lo 
+peblog.lo: /server/source/peblog/peblog.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/server/source/peblog $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /server/source/peblog/peblog.c -o peblog.lo 
 $(phplibdir)/peblog.la: ./peblog.la
 	$(LIBTOOL) --mode=install cp ./peblog.la $(phplibdir)
 
